@@ -1,0 +1,11 @@
+backend/.env
+backend/Procfile
+backend/node_modules/
+frontend/public
+frontend/node_modules/
+
+
+.idea/
+
+# dependencies
+node_modules/
