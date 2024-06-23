@@ -54,7 +54,7 @@ export const AuthProvider = ({children}) => {
     const [state, dispatch] = useReducer(reducer, initialState);
 
     const login = async (email, password) => {
-        const response = await axios.post("/api/auth/login", {
+        const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/login/login`, {
             email,
             password
         });
@@ -64,7 +64,7 @@ export const AuthProvider = ({children}) => {
     };
 
     const register = async (email, username, password) => {
-        const response = await axios.post("http://localhost:5001/api/login/signup",
+        const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/login/signup`,
             {
                 "email": email,
                 "name": username,
