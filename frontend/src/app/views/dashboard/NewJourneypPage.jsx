@@ -2,7 +2,6 @@ import { Stack } from "@mui/material";
 import { Box, styled } from "@mui/material";
 import { Breadcrumb, SimpleCard } from "app/components";
 import JourneyForm from "./JourneyForm";
-import RecipyList from "./RecipyList";
 
 // STYLED COMPONENTS
 const Container = styled("div")(({ theme }) => ({
