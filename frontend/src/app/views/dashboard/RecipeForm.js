@@ -18,7 +18,12 @@ const StyledButton = styled(Button)(({theme}) => ({
     margin: theme.spacing(1)
 }));
 
-export function RecipyDialog({open, setOpen, handleAddRecipe, recipesOptions}) {
+export function RecipyDialog({
+                                 open,
+                                 setOpen,
+                                 handleAddRecipe,
+                                 recipesOptions
+                             }) {
     const {user} = useAuth();
     const [name, setName] = React.useState("");
     const [maxPersonNumber, setMaxPersonNumber] = React.useState("");
@@ -57,11 +62,46 @@ export function RecipyDialog({open, setOpen, handleAddRecipe, recipesOptions}) {
         setIngredientList(ingredientList.filter((_, idx) => idx !== index));
     }
 
-    const handleChange = (event, newValue) => {
+    const fillFormWithRecipe =  (recipe) => {
+        console.log(recipe)
+        setMaxPersonNumber(recipe.max_person_number);
+        setCookingTime(recipe.cooking_time);
+        setMeal(recipe.meal);
+        setPreparationTime(recipe.preparation_time);
+        setSeason(recipe.season);
+        setIngredientList(recipe.recipy_ingredients)
+    }
+
+    const handleChange = async (event, newValue) => {
         setName(newValue);
+
+        try {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/recipy/recipe/${newValue}`);
+
+            // Ajout de la vérification de validité de la réponse
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data === null || Object.keys(data).length === 0){
+                throw new Error('No data returned from fetch call');
+            } else {
+
+            let recipe = data;
+
+            // Faire quelque chose avec la recette ici
+            fillFormWithRecipe(recipe)
+
+            console.log(recipe) }
+
+        } catch (error) {
+            console.error('Error:', error);
+        }
     };
 
-    const handleSaveRecip = async () => {
+    const handleSaveRecipe = () => {
         try {
             if (user && user.name) {
                 let recipe = {
@@ -84,9 +124,8 @@ export function RecipyDialog({open, setOpen, handleAddRecipe, recipesOptions}) {
                     'Authorization': 'Bearer ' + user.token, // Si votre API requiert une authentification, vous devez aussi envoyer un token d'auth dans les headers
                 },
                 body: JSON.stringify(recipe),
-                });
-                */
-                }
+                });*/}
+
 
                 const response = {'ok': true}
                 if (!response.ok) {
@@ -103,6 +142,7 @@ export function RecipyDialog({open, setOpen, handleAddRecipe, recipesOptions}) {
                     setMaxPersonNumber("");
                     setSeason("");
                     setMeal("");
+                    setUnit("")
                     setIngredientList([]);
                 }
             } else {
@@ -111,6 +151,7 @@ export function RecipyDialog({open, setOpen, handleAddRecipe, recipesOptions}) {
         } catch (error) {
             console.error('Une erreur est survenue lors de la création de la recette', error);
         }
+        setOpen(false)
     }
 
     return (<div>
@@ -119,7 +160,7 @@ export function RecipyDialog({open, setOpen, handleAddRecipe, recipesOptions}) {
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
         >
-            <ValidatorForm onSubmit={handleSaveRecip}
+            <ValidatorForm onSubmit={handleSaveRecipe}
                            onError={() => null}>
                 <DialogTitle id="alert-dialog-title">
                     {"Créer une nouvelle recette"}
@@ -148,14 +189,11 @@ export function RecipyDialog({open, setOpen, handleAddRecipe, recipesOptions}) {
                             <Autocomplete
                                 freeSolo
                                 value={name}
-                                onInputChange={handleChange}
-                                options={recipesOptions}
+                                onInputChange={(event, newValue) => handleChange(event, newValue)}
+                                options={recipesOptions || "" }
                                 renderInput={(params) => (
-                                    <TextValidator {...params}
+                                    <TextField {...params}
                                                    label="Nom de la recette"
-                                                   variant="outlined"
-                                                   errorMessages={['Ce champ est requis', 'Doit comporter au moins 4 caractères', 'Ne peut pas dépasser 30 caractères']}
-                                                   validators={["required", "minStringLength: 4", "maxStringLength: 30"]}
 
                                     />
                                 )}
@@ -175,134 +213,134 @@ export function RecipyDialog({open, setOpen, handleAddRecipe, recipesOptions}) {
                         />
 
 
-                    <Box width="40%">
-                        <ComboBoxList
-                            label="Saison"
-                            value={season}
-                            setValue={setSeason}
-                            suggestions={[{label: 'Hiver'}, {label: 'Printemps'}, {label: 'Été'}, {label: 'Automne'}]}
-                        />
+                        <Box width="40%">
+                            <ComboBoxList
+                                label="Saison"
+                                value={season}
+                                setValue={setSeason}
+                                suggestions={[{label: 'Hiver'}, {label: 'Printemps'}, {label: 'Été'}, {label: 'Automne'}]}
+                            />
+                        </Box>
+
+                        <Box width="40%">
+                            <ComboBoxList
+                                label="Repas"
+                                value={meal}
+                                setValue={setMeal}
+                                suggestions={[{label: 'Petit déjeuner'}, {label: 'Déjeuner'}, {label: 'Dîner'}, {label: 'Autre'}]}
+                            />
+                        </Box>
+
+                        <Box width="40%">
+                            <TextField
+                                style={{width: '100%'}}
+                                type="number"
+                                name="Preparation time"
+                                id="preparation-time"
+                                onChange={handlePreparationTimeChange}
+                                value={preparationTime}
+                                label="Temps de préparation (min)"
+                                errorMessages={['Doit être un entier supérieur à 1']}
+                                validators={["minNumber:1"]}
+                            />
+                        </Box>
+
+
+                        <Box width="40%">
+                            <TextValidator
+                                style={{width: '100%'}}
+                                type="number"
+                                name="Cooking time"
+                                id="cooking-time"
+                                onChange={handleCookingTimeChange}
+                                value={cookingTime}
+                                label="Temps de cuisson (min)"
+                                errorMessages={['Doit être un entier supérieur ou égal à 0']}
+                                validators={["minNumber:0"]}
+                            />
+                        </Box>
                     </Box>
+                    <div>
+                        <h3>Liste des ingrédients</h3>
+                    </div>
 
-                    <Box width="40%">
-                        <ComboBoxList
-                            label="Repas"
-                            value={meal}
-                            setValue={setMeal}
-                            suggestions={[{label: 'Petit déjeuner'}, {label: 'Déjeuner'}, {label: 'Dîner'}, {label: 'Autre'}]}
-                        />
-                    </Box>
+                    {ingredientList.map((item, index) => (
+                        <div key={index} style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px'
+                        }}>
+                            <h4 style={{margin: 0}}>
+                                {item.ingredient_name} ({item.recipy_ingredient_quantity} {item.recipy_ingredient_unit})
+                            </h4>
 
-                    <Box width="40%">
-                        <TextField
-                            style={{width: '100%'}}
-                            type="number"
-                            name="Preparation time"
-                            id="preparation-time"
-                            onChange={handlePreparationTimeChange}
-                            value={preparationTime}
-                            label="Temps de préparation (min)"
-                            errorMessages={['Doit être un entier supérieur à 1']}
-                            validators={["minNumber:1"]}
-                        />
-                    </Box>
+                            <CloseIcon
+                                style={{
+                                    color: 'red', cursor: 'pointer'
+                                }}
+                                onClick={() => handleRemoveIngredient(index)}/>
+                        </div>))}
 
-
-                    <Box width="40%">
-                        <TextValidator
-                            style={{width: '100%'}}
-                            type="number"
-                            name="Cooking time"
-                            id="cooking-time"
-                            onChange={handleCookingTimeChange}
-                            value={cookingTime}
-                            label="Temps de cuisson (min)"
-                            errorMessages={['Doit être un entier supérieur ou égal à 0']}
-                            validators={["minNumber:0"]}
-                        />
-                    </Box>
-            </Box>
-                <div>
-                    <h3>Liste des ingrédients</h3>
-                </div>
-
-                {ingredientList.map((item, index) => (
-                    <div key={index} style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px'
-                    }}>
-                        <h4 style={{margin: 0}}>
-                            {item.ingredient_name} ({item.recipy_ingredient_quantity} {item.recipy_ingredient_unit})
-                        </h4>
-
-                        <CloseIcon
-                            style={{
-                                color: 'red', cursor: 'pointer'
-                            }}
-                            onClick={() => handleRemoveIngredient(index)}/>
-                    </div>))}
-
-                <Box display="flex" alignItems="center"
-                     justifyContent="space-between" gap={2}
-                     mt={2}
-                >
-                    <ComboBox
-                        label="Ingrédient"
-                        value={ingredient}
-                        setValue={setIngredient}
-                        width='50%'
-                        options={ingredientOptions}
-                    />
-
-                    <Box width="15%">
-                        <TextValidator
-                            style={{width: '100%'}}
-                            type="number"
-                            name="quantity"
-                            id="quantity"
-                            onChange={handleQuantityChange}
-                            value={quantity}
-                            label="quantité"
-                            errorMessages={['Doit être supérieur à 0']}
-                            validators={["minNumber:0"]}
-                        />
-                    </Box>
-
-                    <ComboBox
-                        label="Unité"
-                        value={unit}
-                        setValue={setUnit}
-                        width='15%'
-                        options={unitOptions}
-                    />
-
-                    <Fab size="small" color="secondary"
-                         aria-label="Add"
-                         sx={{
-                             width: 56,
-                             height: 56,
-                             minWidth: 56,
-                             minHeight: 56,
-                             mx: 2
-                         }}
-                         onClick={handleAddIngredientClick}
+                    <Box display="flex" alignItems="center"
+                         justifyContent="space-between" gap={2}
+                         mt={2}
                     >
-                        <Icon>add</Icon>
-                    </Fab>
-                </Box>
-            </DialogContent>
-            <DialogActions>
-            </DialogActions>
-            <StyledButton
-                variant="contained"
-                type="submit"
-                color="secondary"
-            >
-                Enregistrer
-            </StyledButton>
-        </ValidatorForm>
-    </Dialog>
-</div>)
-    ;
+                        <ComboBox
+                            label="Ingrédient"
+                            value={ingredient}
+                            setValue={setIngredient}
+                            width='50%'
+                            options={ingredientOptions}
+                        />
+
+                        <Box width="15%">
+                            <TextValidator
+                                style={{width: '100%'}}
+                                type="number"
+                                name="quantity"
+                                id="quantity"
+                                onChange={handleQuantityChange}
+                                value={quantity}
+                                label="quantité"
+                                errorMessages={['Doit être supérieur à 0']}
+                                validators={["minNumber:0"]}
+                            />
+                        </Box>
+
+                        <ComboBox
+                            label="Unité"
+                            value={unit}
+                            setValue={setUnit}
+                            width='15%'
+                            options={unitOptions}
+                        />
+
+                        <Fab size="small" color="secondary"
+                             aria-label="Add"
+                             sx={{
+                                 width: 56,
+                                 height: 56,
+                                 minWidth: 56,
+                                 minHeight: 56,
+                                 mx: 2
+                             }}
+                             onClick={handleAddIngredientClick}
+                        >
+                            <Icon>add</Icon>
+                        </Fab>
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                </DialogActions>
+                <StyledButton
+                    variant="contained"
+                    type="submit"
+                    color="secondary"
+                >
+                    Enregistrer
+                </StyledButton>
+            </ValidatorForm>
+        </Dialog>
+    </div>)
+        ;
 }

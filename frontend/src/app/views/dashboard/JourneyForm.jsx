@@ -273,8 +273,6 @@ const JourneyForm = () => {
                               recipesOptions={recipesOptions}
                 />
             </div>
-        )
-            ;
-    }
-;
+        );
+    };
 export default JourneyForm;
