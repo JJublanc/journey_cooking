@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const RecipyIngredientSchema = new Schema({
+const RecipeIngredientSchema = new Schema({
     ingredient_name: {
         type: String,
         required: true
@@ -16,12 +16,12 @@ const RecipyIngredientSchema = new Schema({
     },
 });
 
-const RecipySchema = new Schema({
+const RecipeSchema = new Schema({
     user_email: {
         type: String,
         required: true
     },
-    name: {
+    recipe_name: {
         type: String,
         required: true,
         unique: true
@@ -42,11 +42,7 @@ const RecipySchema = new Schema({
         type: String,
         required: true
     },
-    meal: {
-        type: String,
-        required: true
-    },
-    recipy_ingredients: [RecipyIngredientSchema],
+    recipe_ingredients: [RecipeIngredientSchema],
 });
 
-module.exports = mongoose.model('Recipy', RecipySchema);
+module.exports = mongoose.model('Recipy', RecipeSchema);

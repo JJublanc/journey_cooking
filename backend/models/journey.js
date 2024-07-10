@@ -1,9 +1,23 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const RecipySchema = require('./recipy').schema;
+const RecipeSchema = require('./recipe').schema;
+
+
+const MealSchema
+    = new Schema({
+    date : {
+        type: Date,
+        required: true
+    },
+    meal_type : {
+        type: String,
+        required: true
+    },
+    recipies: RecipeSchema,
+})
 
 const JourneySchema = new Schema({
-    owner : {
+    user_email : {
         type: String,
         required: true
     },
@@ -20,7 +34,7 @@ const JourneySchema = new Schema({
         type: Date,
         required: true
     },
-    recipies: [RecipySchema],
+    meals: [MealSchema],
 });
 
 module.exports = mongoose.model('Journey', JourneySchema);

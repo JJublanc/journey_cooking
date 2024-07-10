@@ -106,13 +106,12 @@ export function RecipyDialog({
             if (user && user.name) {
                 let recipe = {
                     user_email: "johndoe@gmail.com",
-                    name: name,
+                    recipe_name: name,
                     preparation_time: preparationTime,
                     cooking_time: cookingTime,
                     max_person_number: maxPersonNumber,
                     season: season,
-                    meal: meal,
-                    recipy_ingredients: ingredientList
+                    recipe_ingredients: ingredientList
                 };
                 console.log(recipe);
 
