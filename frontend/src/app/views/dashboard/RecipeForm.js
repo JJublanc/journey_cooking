@@ -21,7 +21,9 @@ const StyledButton = styled(Button)(({theme}) => ({
 export function RecipyDialog({
                                  open,
                                  setOpen,
-                                 setJourneyRecipes,
+                                 journeyMeals,
+                                 setJourneyMeals,
+                                 activeIndex,
                                  recipesOptions
                              }) {
     const {user} = useAuth();
@@ -62,7 +64,7 @@ export function RecipyDialog({
         setIngredientList(ingredientList.filter((_, idx) => idx !== index));
     }
 
-    const fillFormWithRecipe =  (recipe) => {
+    const fillFormWithRecipe = (recipe) => {
         console.log(recipe)
         setMaxPersonNumber(recipe.max_person_number);
         setCookingTime(recipe.cooking_time);
@@ -85,16 +87,17 @@ export function RecipyDialog({
 
             const data = await response.json();
 
-            if (data === null || Object.keys(data).length === 0){
+            if (data === null || Object.keys(data).length === 0) {
                 throw new Error('No data returned from fetch call');
             } else {
 
-            let recipe = data;
+                let recipe = data;
 
-            // Faire quelque chose avec la recette ici
-            fillFormWithRecipe(recipe)
+                // Faire quelque chose avec la recette ici
+                fillFormWithRecipe(recipe)
 
-            console.log(recipe) }
+                console.log(recipe)
+            }
 
         } catch (error) {
             console.error('Error:', error);
@@ -124,18 +127,19 @@ export function RecipyDialog({
                     'Authorization': 'Bearer ' + user.token, // Si votre API requiert une authentification, vous devez aussi envoyer un token d'auth dans les headers
                 },
                 body: JSON.stringify(recipe),
-                });*/}
+                });*/
+                }
 
 
                 const response = {'ok': true}
                 if (!response.ok) {
                     console.error('Erreur pendant la création de la recette : ', response);
                 } else {
-                    setJourneyRecipes(prevList => [...prevList, recipe])
-                    setOpen(false)
-                    console.log('Recette créée avec succès');
+                    const updatedJourneyMeals = [...journeyMeals];
+                    updatedJourneyMeals[activeIndex].recipe = recipe;
+                    setJourneyMeals(updatedJourneyMeals);
 
-                    // Réinitialiser les champs de la recette ici
+                    // Réinitialiser les champs de la recette
                     setName("");
                     setPreparationTime("");
                     setCookingTime("");
@@ -144,6 +148,10 @@ export function RecipyDialog({
                     setMeal("");
                     setUnit("")
                     setIngredientList([]);
+
+                    // Clode the recipe form
+                    setOpen(false)
+                    console.log('Recette créée avec succès');
                 }
             } else {
                 console.log('User name is not defined.');
@@ -190,10 +198,10 @@ export function RecipyDialog({
                                 freeSolo
                                 value={name}
                                 onInputChange={(event, newValue) => handleChange(event, newValue)}
-                                options={recipesOptions || "" }
+                                options={recipesOptions || ""}
                                 renderInput={(params) => (
                                     <TextField {...params}
-                                                   label="Nom de la recette"
+                                               label="Nom de la recette"
 
                                     />
                                 )}

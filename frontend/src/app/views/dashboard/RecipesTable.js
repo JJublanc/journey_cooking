@@ -23,10 +23,20 @@ const StyledTable = styled(Table)(({theme}) => ({
     }
 }));
 
-export default function RecipesTable({journeyMeals, setOpenRecipyForm, setActiveIndex}) {
-    const handleButtonClick = (index) => {
+export default function RecipesTable({
+                                         journeyMeals,
+                                         setJourneyMeals,
+                                         setOpenRecipyForm,
+                                         setActiveIndex
+                                     }) {
+    const handleAddRecipe = (index) => {
         setActiveIndex(index)
         setOpenRecipyForm(true)
+    }
+
+    const handleDeleteMeal = (index) => {
+        const newJourneyMeals = journeyMeals.filter((_, i) => i !== index)
+        setJourneyMeals(newJourneyMeals)
     }
 
     return (
@@ -34,9 +44,11 @@ export default function RecipesTable({journeyMeals, setOpenRecipyForm, setActive
             <StyledTable>
                 <TableHead>
                     <TableRow>
-                        <TableCell align="left">Repas</TableCell>
                         <TableCell align="center">Date</TableCell>
+                        <TableCell align="left">Repas</TableCell>
                         <TableCell align="center">Recette</TableCell>
+                        <TableCell align="center">Supprimer</TableCell>
+                        <TableCell align="center">Ajouter</TableCell>
                     </TableRow>
                 </TableHead>
 
@@ -45,21 +57,24 @@ export default function RecipesTable({journeyMeals, setOpenRecipyForm, setActive
                         journeyMeals.length > 0 &&
                         journeyMeals.map((meal, index) => (
                             <TableRow key={index}>
-                                <TableCell align="left">{meal.meal}</TableCell>
                                 <TableCell
                                     align="center">{meal.date}</TableCell>
                                 <TableCell
-                                    align="center">{meal.name}</TableCell>
+                                    align="left">{meal.meal_type}</TableCell>
+                                <TableCell
+                                    align="center">{meal.recipe.recipe_name}</TableCell>
                                 <TableCell align="right">
                                     <IconButton>
-                                        <Icon color="error">close</Icon>
+                                        <Icon color="error"
+                                              onClick={() => handleDeleteMeal(index)}
+                                        >close</Icon>
                                     </IconButton>
                                 </TableCell>
                                 <TableCell
                                     align="center"> {/* Add this block */}
                                     <Button variant="contained"
                                             color="primary"
-                                            onClick={() => handleButtonClick(index)}>
+                                            onClick={() => handleAddRecipe(index)}>
                                         Ajouter
                                     </Button>
                                 </TableCell>

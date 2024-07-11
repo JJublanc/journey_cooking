@@ -13,7 +13,7 @@ const MealSchema
         type: String,
         required: true
     },
-    recipies: RecipeSchema,
+    recipie: RecipeSchema,
 })
 
 const JourneySchema = new Schema({
