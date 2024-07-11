@@ -64,14 +64,15 @@ export default function RecipesTable({
                                 <TableCell
                                     align="center">{meal.recipe.recipe_name}</TableCell>
                                 <TableCell align="right">
-                                    <IconButton>
+                                    <IconButton
+                                        onClick={() => handleDeleteMeal(index)}
+                                    >
                                         <Icon color="error"
-                                              onClick={() => handleDeleteMeal(index)}
                                         >close</Icon>
                                     </IconButton>
                                 </TableCell>
                                 <TableCell
-                                    align="center"> {/* Add this block */}
+                                    align="center">
                                     <Button variant="contained"
                                             color="primary"
                                             onClick={() => handleAddRecipe(index)}>

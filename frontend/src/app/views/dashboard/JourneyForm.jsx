@@ -10,8 +10,6 @@ import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFnsV3";
 import {Span} from "../../components/Typography";
 import {RecipyDialog} from "./RecipeForm";
 import * as React from "react";
-import CloseIcon from "@mui/icons-material/Close";
-import {ComboBoxList} from "./ComboBoxList";
 import RecipesTable from "./RecipesTable"
 import useAuth from "../../hooks/useAuth";
 
@@ -19,25 +17,13 @@ const TextField = styled(TextValidator)(() => ({
     width: "100%", marginBottom: "16px"
 }));
 
-const StyledButton = styled(Button)(({theme}) => ({
-    margin: theme.spacing(1)
-}));
-
-// TODO : 1/ remplacer dans le backend recipes par meals avec un champs date et un champ meal_type
-// TODO : 2/ mettre à jour le frontend pour tenir compte ce cet ajustement
-// TODO : Ajouter les recettes déjà créées comme sugestion avec une autocomplétion
-// TODO : supprimer le repas du form de recette
-
 const JourneyForm = () => {
     const user = {email: "johndoe@gmail.com", token: "XXXX"};
     // const {user} = useAuth();
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
-    const [openRecipyForm, setOpenRecipyForm] = useState(false);
-    const [journeyRecipes, setJourneyRecipes] = React.useState([]);
-    const [selectedRecipe, setSelectedRecipe] = React.useState("");
+    const [openRecipeForm, setOpenRecipeForm] = useState(false);
     const [recipesOptions, setRecipesOptions] = React.useState([]);
-    const [userRecipes, setUserRecipes] = React.useState([]);
     const [journeyMeals, setJourneyMeals] = React.useState([]);
     const [journeyName, setJourneyName] = React.useState("");
     const meals = ['Petit-déjeuner', 'Déjeuner', 'Dîner'];
@@ -53,7 +39,6 @@ const JourneyForm = () => {
         })
             .then(response => response.json())
             .then(data => {
-                setUserRecipes(data);
                 let recipeNames = data.map(recipe => ({label: recipe.name}));
                 setRecipesOptions(recipeNames);
                 console.log(recipesOptions)
@@ -67,10 +52,6 @@ const JourneyForm = () => {
     const handleSubmit = (event) => {
         // console.log("submitted");
         // console.log(event);
-    };
-
-    const handleOpenRecipyForm = () => {
-        setOpenRecipyForm(true);
     };
 
     const handleStartDateChange = (date) => {
@@ -118,26 +99,6 @@ const JourneyForm = () => {
         console.log(journeyMeals)
     }
 
-
-    const handleRemoveRecipe = (index) => {
-        setJourneyRecipes(journeyRecipes.filter((_, idx) => idx !== index));
-    }
-
-    const handleAddExistingRecipe = () => {
-        if (selectedRecipe !== '') {
-            const recipeToAdd = userRecipes.find(recipe => recipe.name === selectedRecipe);
-
-            if (recipeToAdd) {
-                setJourneyRecipes(prevList => [...prevList, recipeToAdd])
-                setSelectedRecipe(null)
-                console.log(journeyRecipes)
-            }
-        } else {
-            console.log("Error: Cannot find the " +
-                "selected recipe in userRecipes!")
-        }
-    }
-
     return (<div>
             <ValidatorForm onSubmit={handleSubmit} onError={() => null}>
                 <Grid container spacing={6}>
@@ -181,67 +142,8 @@ const JourneyForm = () => {
                             <RecipesTable
                                 journeyMeals={journeyMeals}
                                 setJourneyMeals={setJourneyMeals}
-                                setOpenRecipyForm={setOpenRecipyForm}
+                                setOpenRecipyForm={setOpenRecipeForm}
                                 setActiveIndex={setActiveIndex}/>
-                            <div>
-                                <h3>Liste des repas du séjour</h3>
-                            </div>
-
-                            {journeyRecipes.map((item, index) => (
-                                <div key={index} style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '10px'
-                                }}>
-                                    <h4 style={{margin: 0}}>
-                                        {item.recipe_name} ({item.season} {item.max_person_number} pers.
-                                        max)
-                                    </h4>
-
-                                    <CloseIcon
-                                        style={{
-                                            color: 'red',
-                                            cursor: 'pointer'
-                                        }}
-                                        onClick={() => handleRemoveRecipe(index)}/>
-                                </div>
-                            ))}
-
-                            <Box display="flex"
-                                 justifyContent="space-between"
-                                 marginTop={2}>
-                                <Box display="flex">
-                                    <Box>
-                                        <p>Sélectionner une de vos
-                                            recettes</p>
-                                        <ComboBoxList
-                                            label="Repas"
-                                            value={selectedRecipe}
-                                            setValue={setSelectedRecipe}
-                                            suggestions={recipesOptions}
-                                        />
-                                    </Box>
-                                    <Box marginTop={6} marginLeft={2}>
-                                        <Fab color="primary"
-                                             aria-label="Add"
-                                             className="button"
-                                             onClick={handleAddExistingRecipe}
-                                        >
-                                            <Icon>add</Icon>
-                                        </Fab>
-                                    </Box>
-                                </Box>
-                                <Box>
-                                    <p>... ou créer une nouvelle
-                                        recette</p>
-                                    <StyledButton
-                                        variant="contained"
-                                        color="secondary"
-                                        onClick={handleOpenRecipyForm}>
-                                        Nouvelle recette
-                                    </StyledButton>
-                                </Box>
-                            </Box>
                         </Box>
                     </Grid>
                 </Grid>
@@ -259,8 +161,8 @@ const JourneyForm = () => {
                     </Button>
                 </Box>
             </ValidatorForm>
-            <RecipyDialog open={openRecipyForm}
-                          setOpen={setOpenRecipyForm}
+            <RecipyDialog open={openRecipeForm}
+                          setOpen={setOpenRecipeForm}
                           journeyMeals={journeyMeals}
                           setJourneyMeals={setJourneyMeals}
                           activeIndex={activeIndex}
