@@ -134,18 +134,6 @@ const JourneyForm = () => {
             }
         }
 
-        const handleAddNewRecipeClick = (recipy) => {
-            if (recipy.name !== '') {
-                setJourneyRecipes(prevList => [...prevList, recipy])
-            }
-
-            const newJourneyMeals = [...journeyMeals];  // faire une copie du tableau d'état
-            newJourneyMeals[activeIndex].name = recipy.name;  // faire la modification voulue
-            setJourneyMeals(newJourneyMeals);  // mettre à jour l'état avec le tableau modifié
-
-            console.log(journeyRecipes)
-        }
-
         return (<div>
                 <ValidatorForm onSubmit={handleSubmit} onError={() => null}>
                     <Grid container spacing={6}>
@@ -269,7 +257,7 @@ const JourneyForm = () => {
                 </ValidatorForm>
                 <RecipyDialog open={openRecipyForm}
                               setOpen={setOpenRecipyForm}
-                              handleAddRecipe={handleAddNewRecipeClick}
+                              setJourneyRecipes={setJourneyRecipes}
                               recipesOptions={recipesOptions}
                 />
             </div>

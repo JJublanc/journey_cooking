@@ -21,7 +21,7 @@ const StyledButton = styled(Button)(({theme}) => ({
 export function RecipyDialog({
                                  open,
                                  setOpen,
-                                 handleAddRecipe,
+                                 setJourneyRecipes,
                                  recipesOptions
                              }) {
     const {user} = useAuth();
@@ -116,6 +116,7 @@ export function RecipyDialog({
                 console.log(recipe);
 
                 {/*
+                // TODO : gérer le cas où il y a déjà une recette pour afficher un message dans le form
                 const response = await fetch(`${process.env.REACT_APP_API_URL}/recipy/recipy_add`, {
                 method: 'POST',
                 headers: {
@@ -130,7 +131,7 @@ export function RecipyDialog({
                 if (!response.ok) {
                     console.error('Erreur pendant la création de la recette : ', response);
                 } else {
-                    handleAddRecipe(recipe)
+                    setJourneyRecipes(prevList => [...prevList, recipe])
                     setOpen(false)
                     console.log('Recette créée avec succès');
 
