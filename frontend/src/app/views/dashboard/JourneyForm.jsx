@@ -30,7 +30,7 @@ const JourneyForm = () => {
     const [activeIndex, setActiveIndex] = React.useState(0);
 
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_API_URL}/recipy/recipes/` + encodeURIComponent(user.email), {
+        fetch(`${process.env.REACT_APP_API_URL}/recipe/recipes/` + encodeURIComponent(user.email), {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

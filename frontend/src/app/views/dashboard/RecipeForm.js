@@ -120,7 +120,7 @@ export function RecipyDialog({
 
                 {/*
                 // TODO : gérer le cas où il y a déjà une recette pour afficher un message dans le form
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/recipy/recipy_add`, {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/recipe/recipy_add`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
