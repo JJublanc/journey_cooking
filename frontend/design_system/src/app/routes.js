@@ -28,8 +28,8 @@ const routes = [
     ),
     children: [
       ...materialRoutes,
-      // dashboard route
-      { path: "/dashboard/default", element: <Analytics />, auth: authRoles.admin },
+      // newJourney route
+      { path: "/newJourney/default", element: <Analytics />, auth: authRoles.admin },
       // e-chart route
       { path: "/charts/echarts", element: <AppEchart />, auth: authRoles.editor }
     ]

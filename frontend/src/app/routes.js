@@ -14,10 +14,11 @@ const NotFound = Loadable(lazy(() => import("app/views/sessions/NotFound")));
 const JwtLogin = Loadable(lazy(() => import("app/views/sessions/JwtLogin")));
 const JwtRegister = Loadable(lazy(() => import("app/views/sessions/JwtRegister")));
 const ForgotPassword = Loadable(lazy(() => import("app/views/sessions/ForgotPassword")));
+
 // E-CHART PAGE
 const AppEchart = Loadable(lazy(() => import("app/views/charts/echarts/AppEchart")));
 // DASHBOARD PAGE
-const Analytics = Loadable(lazy(() => import("app/views/dashboard/NewJourneypPage")));
+const Analytics = Loadable(lazy(() => import("app/views/newJourney/NewJourneypPage")));
 
 const routes = [
   {
@@ -28,8 +29,8 @@ const routes = [
     ),
     children: [
       ...materialRoutes,
-      // dashboard route
-      { path: "/dashboard/default", element: <Analytics />, auth: authRoles.admin },
+      // newJourney route
+      { path: "/newJourney/default", element: <Analytics />, auth: authRoles.admin },
       // e-chart route
       { path: "/charts/echarts", element: <AppEchart />, auth: authRoles.editor },
     ]
@@ -37,6 +38,7 @@ const routes = [
 
   // session pages route
   { path: "/session/404", element: <NotFound /> },
+
   { path: "/session/signin", element: <JwtLogin /> },
   { path: "/session/signup", element: <JwtRegister /> },
   { path: "/session/forgot-password", element: <ForgotPassword /> },
