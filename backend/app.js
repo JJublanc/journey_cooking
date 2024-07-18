@@ -39,7 +39,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/auth', userRoutes);
-app.use('/api/recipy', recipyRoutes);
+app.use('/api/recipe', recipyRoutes);
 app.use('/api/journey', journeyRoutes);
 
 module.exports = app;

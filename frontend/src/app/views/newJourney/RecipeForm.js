@@ -78,7 +78,7 @@ export function RecipyDialog({
         setName(newValue);
 
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/recipy/recipe/${newValue}`);
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/recipe/recipe/${newValue}`);
 
             // Ajout de la vérification de validité de la réponse
             if (!response.ok) {

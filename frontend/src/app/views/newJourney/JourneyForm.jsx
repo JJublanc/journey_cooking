@@ -30,7 +30,7 @@ const JourneyForm = () => {
     const [activeIndex, setActiveIndex] = React.useState(0);
 
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_API_URL}/recipe/recipes/` + encodeURIComponent(user.email), {
+        fetch(`${process.env.REACT_APP_API_URL}/recipe/recipes/` + user.email, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -107,8 +107,8 @@ const JourneyForm = () => {
                             type="text"
                             name="journeyname"
                             id="standard-basic"
-                            value={journeyName || ""}
-                            onChange={(name) => setJourneyName(name)}
+                            value={journeyName}
+                            onChange={(event) => setJourneyName(event.target.value)}
                             errorMessages={["this field is required"]}
                             label="Nom du séjour (Min length 4, Max length 30)"
                             validators={["required", "minStringLength: 4",
