@@ -221,7 +221,7 @@ const IconList = [
   "crop_portrait",
   "crop_rotate",
   "crop_square",
-  "dashboard",
+  "newJourney",
   "data_usage",
   "date_range",
   "dehaze",

@@ -30,7 +30,7 @@ const JourneyForm = () => {
     const [activeIndex, setActiveIndex] = React.useState(0);
 
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_API_URL}/recipe/recipes/` + encodeURIComponent(user.email), {
+        fetch(`${process.env.REACT_APP_API_URL}/recipe/recipes/` + user.email, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -107,37 +107,47 @@ const JourneyForm = () => {
                             type="text"
                             name="journeyname"
                             id="standard-basic"
-                            value={journeyName || ""}
-                            onChange={(name) => setJourneyName(name)}
+                            value={journeyName}
+                            onChange={(event) => setJourneyName(event.target.value)}
                             errorMessages={["this field is required"]}
                             label="Nom du séjour (Min length 4, Max length 30)"
-                            validators={["required", "minStringLength: 4", "maxStringLength: 30"]}
+                            validators={["required", "minStringLength: 4",
+                                "maxStringLength: 30"]}
                         />
-
-                        <LocalizationProvider dateAdapter={AdapterDateFns}>
-                            <DatePicker
-                                value={startDate}
-                                onChange={handleStartDateChange}
-                                renderInput={(props) => (
-                                    <TextField {...props}
-                                               variant="standard"
-                                               id="mui-pickers-startdate"
-                                               label="Date picker"/>)}
-                            />
-                        </LocalizationProvider>
-
-                        <LocalizationProvider dateAdapter={AdapterDateFns}>
-                            <DatePicker
-                                value={endDate}
-                                onChange={handleEndDateChange}
-                                renderInput={(props) => (
-                                    <TextField {...props}
-                                               variant="standard"
-                                               id="mui-pickers-enddate"
-                                               label="Date picker"/>)}
-                            />
-                        </LocalizationProvider>
-
+                        <Box display="flex" marginTop={2}>
+                            <Box marginRight={2}>
+                                <Box marginRight={2} justifyContent="center" alignItems="center">
+                                    <div>Du</div>
+                                </Box>
+                                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                    <DatePicker
+                                        value={startDate}
+                                        onChange={handleStartDateChange}
+                                        renderInput={(props) => (
+                                            <TextField {...props}
+                                                       variant="standard"
+                                                       id="mui-pickers-startdate"
+                                                       label="Date picker"/>)}
+                                    />
+                                </LocalizationProvider>
+                            </Box>
+                            <Box>
+                                <Box marginRight={2} justifyContent="center" alignItems="center">
+                                    <div>Au</div>
+                                </Box>
+                                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                    <DatePicker
+                                        value={endDate}
+                                        onChange={handleEndDateChange}
+                                        renderInput={(props) => (
+                                            <TextField {...props}
+                                                       variant="standard"
+                                                       id="mui-pickers-enddate"
+                                                       label="Date picker"/>)}
+                                    />
+                                </LocalizationProvider>
+                            </Box>
+                        </Box>
                         <Box marginTop={5}>
                             <RecipesTable
                                 journeyMeals={journeyMeals}
@@ -167,9 +177,9 @@ const JourneyForm = () => {
                           setJourneyMeals={setJourneyMeals}
                           activeIndex={activeIndex}
                           recipesOptions={recipesOptions}
-
             />
         </div>
-    );
+    )
+        ;
 };
 export default JourneyForm;
