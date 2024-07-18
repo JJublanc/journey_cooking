@@ -13,3 +13,4 @@ exports.deleteJourney = (req, res, next) => {
         .then(() => res.json('Journey supprimé'))
         .catch(err => res.status(400).json('Erreur: ' + err));
 }
+

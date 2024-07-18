@@ -6,11 +6,11 @@ const RecipeIngredientSchema = new Schema({
         type: String,
         required: true
     },
-    recipy_ingredient_unit: {
+    recipe_ingredient_unit: {
         type: String,
         required: true
     },
-    recipy_ingredient_quantity: {
+    recipe_ingredient_quantity: {
         type: Number,
         required: true
     },

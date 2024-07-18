@@ -51,8 +51,8 @@ export function RecipyDialog({
         if (ingredient !== '' && unit !== '' && quantity !== '') {
             setIngredientList(prevList => [...prevList, {
                 'ingredient_name': ingredient,
-                'recipy_ingredient_unit': unit,
-                'recipy_ingredient_quantity': quantity
+                'recipe_ingredient_unit': unit,
+                'recipe_ingredient_quantity': quantity
             }]);
             setIngredient("");
             setUnit("");
@@ -279,7 +279,7 @@ export function RecipyDialog({
                             gap: '10px'
                         }}>
                             <h4 style={{margin: 0}}>
-                                {item.ingredient_name} ({item.recipy_ingredient_quantity} {item.recipy_ingredient_unit})
+                                {item.ingredient_name} ({item.recipe_ingredient_quantity} {item.recipe_ingredient_unit})
                             </h4>
 
                             <CloseIcon
