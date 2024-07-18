@@ -1,6 +1,6 @@
 import { Stack } from "@mui/material";
-import { Box, styled } from "@mui/material";
-import { Breadcrumb, SimpleCard } from "app/components";
+import { styled } from "@mui/material";
+import { SimpleCard } from "app/components";
 import JourneyForm from "./JourneyForm";
 
 // STYLED COMPONENTS
@@ -15,12 +15,8 @@ const Container = styled("div")(({ theme }) => ({
 export default function AppForm() {
   return (
     <Container>
-      <Box className="breadcrumb">
-        <Breadcrumb routeSegments={[{ name: "Material", path: "/material" }, { name: "Form" }]} />
-      </Box>
-
       <Stack spacing={3}>
-        <SimpleCard title="Test">
+        <SimpleCard title="Créer un nouveau séjour">
           <JourneyForm/>
         </SimpleCard>
       </Stack>

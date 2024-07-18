@@ -8,9 +8,7 @@ import useSettings from "app/hooks/useSettings";
 import Layout1Topbar from "./Layout1Topbar";
 import Layout1Sidenav from "./Layout1Sidenav";
 
-import Footer from "app/components/Footer";
 import { MatxSuspense } from "app/components";
-import { SecondarySidebar } from "app/components/SecondarySidebar";
 import SidenavTheme from "app/components/MatxTheme/SidenavTheme/SidenavTheme";
 
 import { sidenavCompactWidth, sideNavWidth } from "app/utils/constant";
@@ -117,7 +115,6 @@ const Layout1 = () => {
               </MatxSuspense>
             </Box>
 
-            {settings.footer.show && !settings.footer.fixed && <Footer />}
           </StyledScrollBar>
         )}
 
@@ -135,14 +132,12 @@ const Layout1 = () => {
               </MatxSuspense>
             </Box>
 
-            {settings.footer.show && !settings.footer.fixed && <Footer />}
+
           </ContentBox>
         )}
 
-        {settings.footer.show && settings.footer.fixed && <Footer />}
-      </LayoutContainer>
 
-      {settings.secondarySidebar.show && <SecondarySidebar />}
+      </LayoutContainer>
     </Layout1Root>
   );
 };
