@@ -17,21 +17,28 @@ const reducer = (state, action) => {
         }
 
         case "LOGIN": {
+            const { user, token } = action.payload;
+            localStorage.setItem('token', token);
             return {
                 ...state,
                 isAuthenticated: true,
-                user: action.payload.user
+                user: user,
+                token: token,
             };
         }
 
         case "LOGOUT": {
-            return {...state, isAuthenticated: false, user: null};
+            localStorage.removeItem('token');
+            return {...state, isAuthenticated: false, user: null, token: null};
         }
 
         case "REGISTER": {
-            const {user} = action.payload;
+            const {user, token} = action.payload;
 
-            return {...state, isAuthenticated: true, user};
+            // Sauvegardez le token dans le local storage
+            localStorage.setItem('token', token);
+
+            return {...state, isAuthenticated: true, user, token};
         }
 
         default:
@@ -54,7 +61,7 @@ export const AuthProvider = ({children}) => {
     const [state, dispatch] = useReducer(reducer, initialState);
 
     const login = async (email, password) => {
-        const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/login/login`, {
+        const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/login`, {
             email,
             password
         });
@@ -64,7 +71,7 @@ export const AuthProvider = ({children}) => {
     };
 
     const register = async (email, username, password) => {
-        const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/login/signup`,
+        const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/signup`,
             {
                 "email": email,
                 "name": username,

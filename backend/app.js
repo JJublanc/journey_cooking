@@ -2,6 +2,8 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const userRoutes = require('./routes/user');
+const recipyRoutes = require('./routes/recipe');
+const journeyRoutes = require('./routes/journey');
 require('dotenv').config();
 app.use(express.json());
 const url = require('url');
@@ -36,10 +38,8 @@ app.use((req, res, next) => {
     next();
 });
 
-
-// app.use('/api/auth', userRoutes);
-app.use('/api/login', userRoutes);
-app.use('/api/signup', userRoutes);
-
+app.use('/api/auth', userRoutes);
+app.use('/api/recipy', recipyRoutes);
+app.use('/api/journey', journeyRoutes);
 
 module.exports = app;
