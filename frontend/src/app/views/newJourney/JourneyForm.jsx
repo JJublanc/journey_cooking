@@ -50,8 +50,31 @@ const JourneyForm = () => {
     }, []);
 
     const handleSubmit = (event) => {
-        // console.log("submitted");
-        // console.log(event);
+        if (!journeyName.trim() || !user.email.trim() || journeyMeals.length===0) {
+            alert('Veuillez remplir tous les champs obligatoires.');
+            return;
+        }
+        console.log("submitted");
+        console.log(event);
+        let journeyToSubmit = {
+            user_email: user.email,
+            journey_name: journeyName,
+            start_date: startDate,
+            end_date: endDate,
+            meals: journeyMeals
+        }
+
+        const requestOptions = {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},  // Nous indiquons que nous envoyons des données en format JSON
+            body: JSON.stringify(journeyToSubmit)  // Nous convertissons l'objet journeyToSubmit en JSON
+        };
+
+        // Nous réalisons la requête
+        fetch(`${process.env.REACT_APP_API_URL}/journey_add`, requestOptions)
+            .then(response => response.json())  // Nous convertissons la réponse en JSON
+            .then(data => console.log(data))  // Nous affichons les données de la réponse
+            .catch(err => console.log('Erreur: ' + err)); // Nous affichons une erreur en cas d'échec de la requête
     };
 
     const handleStartDateChange = (date) => {
@@ -74,6 +97,7 @@ const JourneyForm = () => {
         let endDay = new Date(end);
         console.log("Start : " + startDay);
         console.log("End : " + endDay);
+
 
         // Vérifier que la date de début est antérieure à la date de fin
         if (startDay > endDay) {
@@ -116,10 +140,12 @@ const JourneyForm = () => {
                         />
                         <Box display="flex" marginTop={2}>
                             <Box marginRight={2}>
-                                <Box marginRight={2} justifyContent="center" alignItems="center">
+                                <Box marginRight={2} justifyContent="center"
+                                     alignItems="center">
                                     <div>Du</div>
                                 </Box>
-                                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                <LocalizationProvider
+                                    dateAdapter={AdapterDateFns}>
                                     <DatePicker
                                         value={startDate}
                                         onChange={handleStartDateChange}
@@ -132,10 +158,12 @@ const JourneyForm = () => {
                                 </LocalizationProvider>
                             </Box>
                             <Box>
-                                <Box marginRight={2} justifyContent="center" alignItems="center">
+                                <Box marginRight={2} justifyContent="center"
+                                     alignItems="center">
                                     <div>Au</div>
                                 </Box>
-                                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                <LocalizationProvider
+                                    dateAdapter={AdapterDateFns}>
                                     <DatePicker
                                         value={endDate}
                                         onChange={handleEndDateChange}

@@ -14,6 +14,29 @@ const options = {
     useNewUrlParser: true,
     useUnifiedTopology: true
 };
+const bodyParser = require('body-parser');
+const mongoSanitize = require('express-mongo-sanitize');
+const cors = require('cors');
+
+var allowedOrigins = ['http://localhost:3000'];
+
+// Utiliser cors comme middleware à l'échelle de l'application
+app.use(cors({
+    origin: function (origin, callback) {
+        // allow requests with no origin
+        // (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+            var msg = 'The CORS policy for this site does not ' +
+                'allow access from the specified Origin.';
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    }
+}));
+// Utiliser sanitize pour prévenir l'injection NoSQL
+
+app.use(mongoSanitize());
 
 if (useProxy) {
     console.log('Utilisation d\'un proxy pour se connecter à MongoDB.');
