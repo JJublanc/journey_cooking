@@ -32,7 +32,7 @@ const RecipeSchema = new Schema({
     },
     cooking_time: {
         type: Number,
-        required: true
+        required: false
     },
     max_person_number: {
         type: Number,

@@ -71,7 +71,7 @@ const JourneyForm = () => {
         };
 
         // Nous réalisons la requête
-        fetch(`${process.env.REACT_APP_API_URL}/journey_add`, requestOptions)
+        fetch(`${process.env.REACT_APP_API_URL}/journey/journey_add`, requestOptions)
             .then(response => response.json())  // Nous convertissons la réponse en JSON
             .then(data => console.log(data))  // Nous affichons les données de la réponse
             .catch(err => console.log('Erreur: ' + err)); // Nous affichons une erreur en cas d'échec de la requête
@@ -88,6 +88,15 @@ const JourneyForm = () => {
         console.log("la date qui vient d'être changée est " + date)
         computeJourneyMeals(startDate, date);
     };
+
+    const formatToDateString = (date) => {
+    let newDate = new Date(date);
+    let year = newDate.getFullYear();
+    let month = (1 + newDate.getMonth()).toString().padStart(2, '0');
+    let day = newDate.getDate().toString().padStart(2, '0');
+
+    return month + '/' + day + '/' + year;
+}
 
     const computeJourneyMeals = (start, end) => {
         setJourneyMeals([])
@@ -109,7 +118,7 @@ const JourneyForm = () => {
         let newJourneyMeals = [];
         for (let day = startDay; day <= endDay; day.setDate(day.getDate() + 1)) {
             console.log(day);
-            const dateString = [day.getDate(), day.getMonth() + 1, day.getFullYear()].join('/');
+            const dateString = formatToDateString(day);
             meals.forEach(meal => {
                 newJourneyMeals.push({
                     'date': dateString,

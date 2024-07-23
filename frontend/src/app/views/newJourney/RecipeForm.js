@@ -116,47 +116,41 @@ export function RecipyDialog({
                     season: season,
                     recipe_ingredients: ingredientList
                 };
-                console.log(recipe);
+                fetch(`${process.env.REACT_APP_API_URL}/recipe/recipy_add`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + user.token, // Si votre API requiert une authentification, vous devez aussi envoyer un token d'auth dans les headers
+                    },
+                    body: JSON.stringify(recipe),
+                }).then(response => {
+                    if (!response.ok) {
+                        console.error('Erreur pendant la création de la recette : ', response);
+                    } else {
+                        const updatedJourneyMeals = [...journeyMeals];
+                        updatedJourneyMeals[activeIndex].recipe = recipe;
+                        setJourneyMeals(updatedJourneyMeals);
 
-                {/*
-                // TODO : gérer le cas où il y a déjà une recette pour afficher un message dans le form
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/recipe/recipy_add`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + user.token, // Si votre API requiert une authentification, vous devez aussi envoyer un token d'auth dans les headers
-                },
-                body: JSON.stringify(recipe),
-                });*/
-                }
+                        // Réinitialiser les champs de la recette
+                        setName("");
+                        setPreparationTime("");
+                        setCookingTime("");
+                        setMaxPersonNumber("");
+                        setSeason("");
+                        setMeal("");
+                        setUnit("")
+                        setIngredientList([]);
 
-
-                const response = {'ok': true}
-                if (!response.ok) {
-                    console.error('Erreur pendant la création de la recette : ', response);
-                } else {
-                    const updatedJourneyMeals = [...journeyMeals];
-                    updatedJourneyMeals[activeIndex].recipe = recipe;
-                    setJourneyMeals(updatedJourneyMeals);
-
-                    // Réinitialiser les champs de la recette
-                    setName("");
-                    setPreparationTime("");
-                    setCookingTime("");
-                    setMaxPersonNumber("");
-                    setSeason("");
-                    setMeal("");
-                    setUnit("")
-                    setIngredientList([]);
-
-                    // Clode the recipe form
-                    setOpen(false)
-                    console.log('Recette créée avec succès');
-                }
+                        // Clode the recipe form
+                        setOpen(false)
+                        console.log('Recette créée avec succès');
+                    }
+                })
             } else {
                 console.log('User name is not defined.');
             }
-        } catch (error) {
+        } catch
+            (error) {
             console.error('Une erreur est survenue lors de la création de la recette', error);
         }
         setOpen(false)
