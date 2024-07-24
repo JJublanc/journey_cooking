@@ -24,7 +24,6 @@ const RecipeSchema = new Schema({
     recipe_name: {
         type: String,
         required: true,
-        unique: true
     },
     preparation_time: {
         type: Number,
@@ -34,7 +33,7 @@ const RecipeSchema = new Schema({
         type: Number,
         required: false
     },
-    max_person_number: {
+    person_number: {
         type: Number,
         required: true
     },

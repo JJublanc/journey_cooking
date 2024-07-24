@@ -28,7 +28,8 @@ const JourneyForm = () => {
     const [journeyName, setJourneyName] = React.useState("");
     const meals = ['Petit-déjeuner', 'Déjeuner', 'Dîner'];
     const [activeIndex, setActiveIndex] = React.useState(0);
-
+    const [JourneyPeopleNumber, setJourneyPeopleNumber] = React.useState(1);
+    const [submitError, setSubmitError] = useState(null);
     useEffect(() => {
         fetch(`${process.env.REACT_APP_API_URL}/recipe/recipes/` + user.email, {
             method: 'GET',
@@ -38,19 +39,34 @@ const JourneyForm = () => {
             },
         })
             .then(response => response.json())
-            .then(data => {
-                let recipeNames = data.map(recipe => ({label: recipe.name}));
-                setRecipesOptions(recipeNames);
-                console.log(recipesOptions)
-            })
+            .then(
+                data => {
+                    console.log(data);
+                    if (!data) {
+                        setRecipesOptions([]);
+                        return;
+                    }
+
+                    let recipeNames = data
+                        .filter(recipe => recipe.recipe_name && recipe.recipe_name.trim().length > 0)
+                        .map(recipe => ({label: recipe.recipe_name}));
+
+                    setRecipesOptions(recipeNames);
+                }
+            )
             .catch(error => {
                 console.error('An error occurred while fetching the recipes:', error);
                 setRecipesOptions([]);
             });
     }, []);
 
+// This useEffect will run every time recipesOptions state changes
+    useEffect(() => {
+        console.log(recipesOptions);
+    }, [recipesOptions]);
+
     const handleSubmit = (event) => {
-        if (!journeyName.trim() || !user.email.trim() || journeyMeals.length===0) {
+        if (!journeyName.trim() || !user.email.trim() || journeyMeals.length === 0) {
             alert('Veuillez remplir tous les champs obligatoires.');
             return;
         }
@@ -61,20 +77,48 @@ const JourneyForm = () => {
             journey_name: journeyName,
             start_date: startDate,
             end_date: endDate,
+            number_of_people: JourneyPeopleNumber,
             meals: journeyMeals
         }
+        console.log(journeyToSubmit);
 
         const requestOptions = {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},  // Nous indiquons que nous envoyons des données en format JSON
             body: JSON.stringify(journeyToSubmit)  // Nous convertissons l'objet journeyToSubmit en JSON
         };
-
-        // Nous réalisons la requête
         fetch(`${process.env.REACT_APP_API_URL}/journey/journey_add`, requestOptions)
-            .then(response => response.json())  // Nous convertissons la réponse en JSON
-            .then(data => console.log(data))  // Nous affichons les données de la réponse
-            .catch(err => console.log('Erreur: ' + err)); // Nous affichons une erreur en cas d'échec de la requête
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(errorText => {
+                        throw new Error(`${response.status} ${response.statusText}: ${errorText}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+                // Faire quelque chose avec data...
+            })
+            .catch(err => {
+                console.log('Erreur: ' + err);
+                if (err.message.includes('E11000 duplicate key error collection')) {
+                    setSubmitError('Un séjour avec ce nom existe déjà.');
+                    setTimeout(() => {
+                        setSubmitError(null); // Réinitialiser l'erreur après 10 secondes
+                    }, 10000);
+                } else if (err.message.includes('is required')) {
+                    setSubmitError('Veuillez remplir tous les champs obligatoires.');
+                    setTimeout(() => {
+                        setSubmitError(null); // Réinitialiser l'erreur après 10 secondes
+                    }, 10000);
+                } else {
+                    setSubmitError('Une erreur s\'est produite lors de la soumission du formulaire.');
+                    setTimeout(() => {
+                        setSubmitError(null); // Réinitialiser l'erreur après 10 secondes
+                    }, 10000);
+                }
+            });
     };
 
     const handleStartDateChange = (date) => {
@@ -90,13 +134,13 @@ const JourneyForm = () => {
     };
 
     const formatToDateString = (date) => {
-    let newDate = new Date(date);
-    let year = newDate.getFullYear();
-    let month = (1 + newDate.getMonth()).toString().padStart(2, '0');
-    let day = newDate.getDate().toString().padStart(2, '0');
+        let newDate = new Date(date);
+        let year = newDate.getFullYear();
+        let month = (1 + newDate.getMonth()).toString().padStart(2, '0');
+        let day = newDate.getDate().toString().padStart(2, '0');
 
-    return month + '/' + day + '/' + year;
-}
+        return month + '/' + day + '/' + year;
+    }
 
     const computeJourneyMeals = (start, end) => {
         setJourneyMeals([])
@@ -133,19 +177,28 @@ const JourneyForm = () => {
     }
 
     return (<div>
+            {submitError && <p style={{color: 'red'}}>{submitError}</p>}
             <ValidatorForm onSubmit={handleSubmit} onError={() => null}>
                 <Grid container spacing={6}>
                     <Grid item lg={6} md={6} sm={12} xs={12} sx={{mt: 2}}>
                         <TextField
-                            type="text"
-                            name="journeyname"
-                            id="standard-basic"
+                            name="journeyName"
+                            validators={['required']}
+                            errorMessages={['Ce champ est requis.']}
+                            label="Nom du séjour"
                             value={journeyName}
                             onChange={(event) => setJourneyName(event.target.value)}
-                            errorMessages={["this field is required"]}
-                            label="Nom du séjour (Min length 4, Max length 30)"
-                            validators={["required", "minStringLength: 4",
-                                "maxStringLength: 30"]}
+                        />
+                        <TextValidator
+                            style={{width: '100%'}}
+                            type="number"
+                            name="People Number during the journey"
+                            id="people-number"
+                            onChange={(event) => setJourneyPeopleNumber(event.target.value)}
+                            value={JourneyPeopleNumber}
+                            errorMessages={['Ce champ est requis', 'Doit être un entier supérieur à 1', 'Doit être un entier inférieur à 100']}
+                            label="Nombre de personnes pendant le séjour"
+                            validators={["required", "minNumber:1", "maxNumber:100"]}
                         />
                         <Box display="flex" marginTop={2}>
                             <Box marginRight={2}>
