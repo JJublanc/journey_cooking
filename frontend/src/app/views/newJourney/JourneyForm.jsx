@@ -10,7 +10,7 @@ import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFnsV3";
 import {Span} from "../../components/Typography";
 import {RecipyDialog} from "./RecipeForm";
 import * as React from "react";
-import RecipesTable from "./RecipesTable"
+import MealsTable from "./MealsTable"
 import useAuth from "../../hooks/useAuth";
 
 const TextField = styled(TextValidator)(() => ({
@@ -28,8 +28,11 @@ const JourneyForm = () => {
     const [journeyName, setJourneyName] = React.useState("");
     const meals = ['Petit-déjeuner', 'Déjeuner', 'Dîner'];
     const [activeIndex, setActiveIndex] = React.useState(0);
-    const [JourneyPeopleNumber, setJourneyPeopleNumber] = React.useState(1);
+    const [JourneyPeopleNumber, setJourneyPeopleNumber] = React.useState(null);
     const [submitError, setSubmitError] = useState(null);
+    const [submitSuccess, setSubmitSuccess] = useState(null);
+
+
     useEffect(() => {
         fetch(`${process.env.REACT_APP_API_URL}/recipe/recipes/` + user.email, {
             method: 'GET',
@@ -97,11 +100,19 @@ const JourneyForm = () => {
                 return response.json();
             })
             .then(data => {
-                console.log(data);
-                // Faire quelque chose avec data...
+                // Reset all fields
+                setJourneyName("");
+                setStartDate(new Date());
+                setEndDate(new Date());
+                setJourneyPeopleNumber(1);
+                setJourneyMeals([]);
+                setSubmitError(null);
+                setSubmitSuccess('Le séjour a été ajouté avec succès.');
+                setTimeout(() => {
+                    setSubmitSuccess(null); // Reset success message after 10 seconds
+                }, 10000);
             })
             .catch(err => {
-                console.log('Erreur: ' + err);
                 if (err.message.includes('E11000 duplicate key error collection')) {
                     setSubmitError('Un séjour avec ce nom existe déjà.');
                     setTimeout(() => {
@@ -178,6 +189,7 @@ const JourneyForm = () => {
 
     return (<div>
             {submitError && <p style={{color: 'red'}}>{submitError}</p>}
+            {submitSuccess && <p style={{color: 'green'}}>{submitSuccess}</p>}
             <ValidatorForm onSubmit={handleSubmit} onError={() => null}>
                 <Grid container spacing={6}>
                     <Grid item lg={6} md={6} sm={12} xs={12} sx={{mt: 2}}>
@@ -239,7 +251,7 @@ const JourneyForm = () => {
                             </Box>
                         </Box>
                         <Box marginTop={5}>
-                            <RecipesTable
+                            <MealsTable
                                 journeyMeals={journeyMeals}
                                 setJourneyMeals={setJourneyMeals}
                                 setOpenRecipyForm={setOpenRecipeForm}

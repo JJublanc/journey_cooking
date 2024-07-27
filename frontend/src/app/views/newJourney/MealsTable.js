@@ -23,7 +23,7 @@ const StyledTable = styled(Table)(({theme}) => ({
     }
 }));
 
-export default function RecipesTable({
+export default function MealsTable({
                                          journeyMeals,
                                          setJourneyMeals,
                                          setOpenRecipyForm,

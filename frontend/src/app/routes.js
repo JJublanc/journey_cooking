@@ -19,6 +19,7 @@ const ForgotPassword = Loadable(lazy(() => import("app/views/sessions/ForgotPass
 const AppEchart = Loadable(lazy(() => import("app/views/charts/echarts/AppEchart")));
 // DASHBOARD PAGE
 const Analytics = Loadable(lazy(() => import("app/views/newJourney/NewJourneypPage")));
+const JourneyInfo = Loadable(lazy(() => import("app/views/journeyInfo/JourneyInfoPage")));
 
 const routes = [
   {
@@ -32,7 +33,7 @@ const routes = [
       // newJourney route
       { path: "/newJourney/default", element: <Analytics />, auth: authRoles.admin },
       // e-chart route
-      { path: "/charts/echarts", element: <AppEchart />, auth: authRoles.editor },
+      { path: "/journeyInfo/default", element: <JourneyInfo />, auth: authRoles.editor },
     ]
   },
 
