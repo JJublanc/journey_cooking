@@ -91,7 +91,7 @@ const IconBox = styled("div")(({ theme }) => ({
 const Layout1Topbar = () => {
   const theme = useTheme();
   const { settings, updateSettings } = useSettings();
-  const { logout, user } = useAuth();
+  const { logout, user, isAuthenticated } = useAuth();
   const isMdScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   const updateSidebarMode = (sidebarSettings) => {
@@ -130,7 +130,7 @@ const Layout1Topbar = () => {
               <UserMenu>
                 <Hidden xsDown>
                   <Span>
-                    Hi <strong>{user.name}</strong>
+                     <strong>{isAuthenticated ? "Hi" + user.name : ""}</strong>
                   </Span>
                 </Hidden>
               </UserMenu>
