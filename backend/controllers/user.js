@@ -17,7 +17,6 @@ exports.login = (req, res, next) => {
                     }
                     res.status(200).json({
                         user: {
-                            userId: user._id,
                             name: user.name,
                             token: jwt.sign(
                                 {userId: user._id},
@@ -50,7 +49,6 @@ exports.signup = (req, res, next) => {
                         .then((savedUser) => res.status(201).json({
                             message: 'User created!',
                             user: {
-                                userId: savedUser._id,
                                 name: savedUser.name,
                                 token: jwt.sign(
                                     {userId: savedUser._id},
@@ -69,3 +67,22 @@ exports.signup = (req, res, next) => {
 .
 catch(error => res.status(500).json({error}));
 }
+
+exports.getUserProfile = (req, res, next) => {
+    try {
+        const token = req.headers.authorization.split(' ')[1];
+        const decodedToken = jwt.verify(token, process.env.RANDOM_TOKEN_SECRET);
+        const userId = decodedToken.userId;
+
+        User.findById(userId)
+            .then(user => {
+                if (!user) {
+                    return res.status(404).json({ message: 'User not found' });
+                }
+                res.status(200).json({ user: { name: user.name, email: user.email } });
+            })
+            .catch(error => res.status(500).json({ error }));
+    } catch {
+        res.status(401).json({ message: 'Invalid request!' });
+    }
+};
