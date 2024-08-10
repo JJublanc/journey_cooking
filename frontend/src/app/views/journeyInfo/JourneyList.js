@@ -3,14 +3,19 @@ import JourneyTable from "./JourneyTable";
 import useAuth from "../../hooks/useAuth";
 const JourneyList = () => {
     const [journeys, setJourneys] =  useState([]);
-    const user = useAuth()
+    const user = useAuth().user;
+    const [currentUser, setCurrentUser] = useState(user);
 
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_API_URL}/journey/user_journeys/` + user.email, {
+        setCurrentUser(user);
+    }, [user]);
+
+    useEffect(() => {
+        fetch(`${process.env.REACT_APP_API_URL}/journey/user_journeys/` + currentUser.email, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + user.token,
+                'Authorization': 'Bearer ' + currentUser.token,
             },
         })
             .then(response => response.json())

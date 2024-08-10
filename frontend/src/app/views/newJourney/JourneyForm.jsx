@@ -18,8 +18,7 @@ const TextField = styled(TextValidator)(() => ({
 }));
 
 const JourneyForm = () => {
-    const user= useAuth();
-    // const {user} = useAuth();
+    const user = useAuth().user;
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
     const [openRecipeForm, setOpenRecipeForm] = useState(false);
@@ -31,14 +30,19 @@ const JourneyForm = () => {
     const [JourneyPeopleNumber, setJourneyPeopleNumber] = React.useState(null);
     const [submitError, setSubmitError] = useState(null);
     const [submitSuccess, setSubmitSuccess] = useState(null);
-
+    const [currentUser, setCurrentUser] = useState(user);
 
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_API_URL}/recipe/recipes/` + user.email, {
+        setCurrentUser(user);
+    }, [user]);
+
+    useEffect(() => {
+        console.log(currentUser);
+        fetch(`${process.env.REACT_APP_API_URL}/recipe/recipes/` + currentUser.email, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + user.token,
+                'Authorization': 'Bearer ' + currentUser.token,
             },
         })
             .then(response => response.json())
@@ -69,14 +73,14 @@ const JourneyForm = () => {
     }, [recipesOptions]);
 
     const handleSubmit = (event) => {
-        if (!journeyName.trim() || !user.email.trim() || journeyMeals.length === 0) {
+        if (!journeyName.trim() || !currentUser.email.trim() || journeyMeals.length === 0) {
             alert('Veuillez remplir tous les champs obligatoires.');
             return;
         }
         console.log("submitted");
         console.log(event);
         let journeyToSubmit = {
-            user_email: user.email,
+            user_email: currentUser.email,
             journey_name: journeyName,
             start_date: startDate,
             end_date: endDate,
@@ -87,8 +91,11 @@ const JourneyForm = () => {
 
         const requestOptions = {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},  // Nous indiquons que nous envoyons des données en format JSON
-            body: JSON.stringify(journeyToSubmit)  // Nous convertissons l'objet journeyToSubmit en JSON
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + currentUser.token,
+            },
+            body: JSON.stringify(journeyToSubmit)
         };
         fetch(`${process.env.REACT_APP_API_URL}/journey/journey_add`, requestOptions)
             .then(response => {
@@ -279,6 +286,7 @@ const JourneyForm = () => {
                           setJourneyMeals={setJourneyMeals}
                           activeIndex={activeIndex}
                           recipesOptions={recipesOptions}
+                          user={currentUser}
             />
         </div>
     )

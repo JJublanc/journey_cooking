@@ -24,9 +24,9 @@ export function RecipyDialog({
                                  journeyMeals,
                                  setJourneyMeals,
                                  activeIndex,
-                                 recipesOptions
+                                 recipesOptions,
+                                 user,
                              }) {
-    const {user} = useAuth();
     const [name, setName] = React.useState("");
     const [personNumber, setPersonNumber] = React.useState("");
     const [cookingTime, setCookingTime] = React.useState("");
@@ -83,7 +83,13 @@ export function RecipyDialog({
 
         try {
             const response = await fetch(
-                `${process.env.REACT_APP_API_URL}/recipe/recipe/${newValue}`);
+                `${process.env.REACT_APP_API_URL}/recipe/recipe/${newValue}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + user.token,
+                    },
+                })
 
             // Ajout de la vérification de validité de la réponse
             if (!response.ok) {

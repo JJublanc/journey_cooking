@@ -17,6 +17,7 @@ exports.login = (req, res, next) => {
                     }
                     res.status(200).json({
                         user: {
+                            email: user.email,
                             name: user.name,
                             token: jwt.sign(
                                 {userId: user._id},
@@ -49,6 +50,7 @@ exports.signup = (req, res, next) => {
                             .then((savedUser) => res.status(201).json({
                                     message: 'User created!',
                                     user: {
+                                        email: savedUser.email,
                                         name: savedUser.name,
                                         token: jwt.sign(
                                             {userId: savedUser._id},
@@ -79,6 +81,7 @@ exports.getUserProfile = (req, res, next) => {
                 }
                 res.status(200).json({
                     user: {
+                        email: user.email,
                         name: user.name,
                         token: jwt.sign(
                                     {userId: userId},
