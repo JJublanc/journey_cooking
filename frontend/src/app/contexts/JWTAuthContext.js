@@ -16,13 +16,13 @@ const reducer = (state, action) => {
             return { ...state, isAuthenticated, isInitialized: true, user };
         }
         case "LOGIN": {
-            const { user, token } = action.payload;
-            if (token) {
-                localStorage.setItem('token', token);
+            const { user } = action.payload;
+            if (user.token) {
+                localStorage.setItem('token', user.token);
             } else {
                 console.error('No token received');
             }
-            return { ...state, isAuthenticated: true, user, token };
+            return { ...state, isAuthenticated: true, user };
 
         }
         case "LOGOUT": {
@@ -30,13 +30,13 @@ const reducer = (state, action) => {
             return { ...state, isAuthenticated: false, user: null, token: null };
         }
         case "REGISTER": {
-            const { user, token } = action.payload;
-            if (token) {
-                localStorage.setItem('token', token);
+            const { user } = action.payload;
+            if (user.token) {
+                localStorage.setItem('token', user.token);
             } else {
                 console.error('No token received');
             }
-            return { ...state, isAuthenticated: true, user, token };
+            return { ...state, isAuthenticated: true, user };
         }
         default:
             return state;
@@ -57,17 +57,13 @@ export const AuthProvider = ({ children }) => {
     const login = async (email, password) => {
         const response = await axios.post(`${process.env.REACT_APP_API_URL}/auth/login`, { email, password });
         const user = response.data.user
-        const token = response.data.user.token;
-        dispatch({ type: "LOGIN", payload: { user, token } });
-        console.log('User after login:', user);
+        dispatch({ type: "LOGIN", payload: { user } });
     };
 
     const register = async (email, username, password) => {
         const response = await axios.post(`${process.env.REACT_APP_API_URL}/auth/signup`, { email, name: username, password });
         const user = response.data.user ;
-        const token = response.data.user.token;
-        dispatch({ type: "REGISTER", payload: { user, token } });
-
+        dispatch({ type: "REGISTER", payload: { user } });
     };
 
     const logout = () => {

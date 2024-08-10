@@ -98,7 +98,6 @@ const Layout1Topbar = () => {
     const [currentUser, setCurrentUser] = useState(user);
 
     useEffect(() => {
-        console.log('User in Layout1Topbar:', user);
         setCurrentUser(user);
     }, [user]);
 

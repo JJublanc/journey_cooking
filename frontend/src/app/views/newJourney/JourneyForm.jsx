@@ -18,7 +18,7 @@ const TextField = styled(TextValidator)(() => ({
 }));
 
 const JourneyForm = () => {
-    const user = {email: "johndoe@gmail.com", token: "XXXX"};
+    const user= useAuth();
     // const {user} = useAuth();
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());

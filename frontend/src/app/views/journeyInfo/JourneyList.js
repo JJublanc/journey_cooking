@@ -1,8 +1,9 @@
 import {useEffect, useState} from "react";
 import JourneyTable from "./JourneyTable";
+import useAuth from "../../hooks/useAuth";
 const JourneyList = () => {
     const [journeys, setJourneys] =  useState([]);
-    const user = {email: "johndoe@gmail.com", token: "XXXX"};
+    const user = useAuth()
 
     useEffect(() => {
         fetch(`${process.env.REACT_APP_API_URL}/journey/user_journeys/` + user.email, {
