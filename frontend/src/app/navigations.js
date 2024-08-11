@@ -28,7 +28,7 @@ export const navigations = [
             },
             {
                 name: "Visualiser vos séjours",
-                path: "/charts/echarts/default",
+                path: "/journeyInfo/default",
                 icon: "pie_chart"
             },
         ]

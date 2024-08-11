@@ -13,7 +13,7 @@ const MealSchema
         type: String,
         required: true
     },
-    recipie: RecipeSchema,
+    recipe: RecipeSchema,
 })
 
 const JourneySchema = new Schema({
@@ -33,6 +33,10 @@ const JourneySchema = new Schema({
     end_date: {
         type: Date,
         required: true
+    },
+    number_of_people: {
+        type: Number,
+        required: true,
     },
     meals: [MealSchema],
 });

@@ -51,7 +51,7 @@ const LayoutContainer = styled(Box)(({ width, open }) => ({
 
 const Layout1 = () => {
   const { settings, updateSettings } = useSettings();
-  const { layout1Settings, secondarySidebar } = settings;
+  const { layout1Settings } = settings;
   const topbarTheme = settings.themes[layout1Settings.topbar.theme];
   const {
     leftSidebar: { mode: sidenavMode, show: showSidenav }
@@ -95,7 +95,7 @@ const Layout1 = () => {
         </SidenavTheme>
       )}
 
-      <LayoutContainer width={sidenavWidth} open={secondarySidebar.open}>
+      <LayoutContainer width={sidenavWidth}>
         {layout1Settings.topbar.show && layout1Settings.topbar.fixed && (
           <ThemeProvider theme={topbarTheme}>
             <Layout1Topbar fixed={true} className="elevation-z8" />

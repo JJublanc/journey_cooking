@@ -2,10 +2,20 @@
 const Recipe = require('../models/recipe'); // Assurez-vous que le chemin est correct
 
 exports.addRecipe = (req, res, next) => {
-    const newRecipy = new Recipe(req.body);
-    newRecipy.save()
-        .then(() => res.json('Backend message : recette ajoutée avec succès'))
-        .catch(err => res.status(400).json('Erreur: ' + err));
+    const recipeName = req.body.recipe_name;
+
+    Recipe.findOne({ recipe_name: recipeName })
+        .then(existingRecipe => {
+            if (existingRecipe) {
+                return res.status(400).json('Erreur: Une recette avec ce nom existe déjà');
+            }
+
+            const newRecipe = new Recipe(req.body);
+            newRecipe.save()
+                .then(() => res.json('Backend message : recette ajoutée avec succès'))
+                .catch(err => res.status(400).json('Erreur: ' + err));
+        })
+        .catch(err => res.status(500).json('Erreur: ' + err));
 }
 
 exports.getRecipesByEmail = (req, res, next) => {
@@ -21,13 +31,13 @@ exports.getRecipesByEmail = (req, res, next) => {
 }
 
 exports.getRecipeByName = (req, res, next) => {
-     const name = req.params.name;
-     Recipe.findOne({ name }) // { name } est équivalent à { name: name }
-        .then(recipy => {
-            if (!recipy) {
+    const recipe_name = req.params.recipe_name;
+    Recipe.findOne({ recipe_name : recipe_name})
+        .then(recipe => {
+            if (!recipe) {
                 return res.status(404).json('Aucune recette trouvée avec ce nom');
             }
-            res.json(recipy);
+            res.json(recipe);
         })
         .catch(err => res.status(500).json('Erreur: ' + err));
 }

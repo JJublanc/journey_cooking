@@ -10,7 +10,7 @@ import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFnsV3";
 import {Span} from "../../components/Typography";
 import {RecipyDialog} from "./RecipeForm";
 import * as React from "react";
-import RecipesTable from "./RecipesTable"
+import MealsTable from "./MealsTable"
 import useAuth from "../../hooks/useAuth";
 
 const TextField = styled(TextValidator)(() => ({
@@ -18,8 +18,7 @@ const TextField = styled(TextValidator)(() => ({
 }));
 
 const JourneyForm = () => {
-    const user = {email: "johndoe@gmail.com", token: "XXXX"};
-    // const {user} = useAuth();
+    const user = useAuth().user;
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
     const [openRecipeForm, setOpenRecipeForm] = useState(false);
@@ -28,30 +27,116 @@ const JourneyForm = () => {
     const [journeyName, setJourneyName] = React.useState("");
     const meals = ['Petit-déjeuner', 'Déjeuner', 'Dîner'];
     const [activeIndex, setActiveIndex] = React.useState(0);
+    const [JourneyPeopleNumber, setJourneyPeopleNumber] = React.useState(null);
+    const [submitError, setSubmitError] = useState(null);
+    const [submitSuccess, setSubmitSuccess] = useState(null);
+    const [currentUser, setCurrentUser] = useState(user);
 
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_API_URL}/recipe/recipes/` + user.email, {
+        setCurrentUser(user);
+    }, [user]);
+
+    useEffect(() => {
+        console.log(currentUser);
+        fetch(`${process.env.REACT_APP_API_URL}/recipe/recipes/` + currentUser.email, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + user.token,
+                'Authorization': 'Bearer ' + currentUser.token,
             },
         })
             .then(response => response.json())
-            .then(data => {
-                let recipeNames = data.map(recipe => ({label: recipe.name}));
-                setRecipesOptions(recipeNames);
-                console.log(recipesOptions)
-            })
+            .then(
+                data => {
+                    console.log(data);
+                    if (!data) {
+                        setRecipesOptions([]);
+                        return;
+                    }
+
+                    let recipeNames = data
+                        .filter(recipe => recipe.recipe_name && recipe.recipe_name.trim().length > 0)
+                        .map(recipe => ({label: recipe.recipe_name}));
+
+                    setRecipesOptions(recipeNames);
+                }
+            )
             .catch(error => {
                 console.error('An error occurred while fetching the recipes:', error);
                 setRecipesOptions([]);
             });
     }, []);
 
+// This useEffect will run every time recipesOptions state changes
+    useEffect(() => {
+        console.log(recipesOptions);
+    }, [recipesOptions]);
+
     const handleSubmit = (event) => {
-        // console.log("submitted");
-        // console.log(event);
+        if (!journeyName.trim() || !currentUser.email.trim() || journeyMeals.length === 0) {
+            alert('Veuillez remplir tous les champs obligatoires.');
+            return;
+        }
+        console.log("submitted");
+        console.log(event);
+        let journeyToSubmit = {
+            user_email: currentUser.email,
+            journey_name: journeyName,
+            start_date: startDate,
+            end_date: endDate,
+            number_of_people: JourneyPeopleNumber,
+            meals: journeyMeals
+        }
+        console.log(journeyToSubmit);
+
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + currentUser.token,
+            },
+            body: JSON.stringify(journeyToSubmit)
+        };
+        fetch(`${process.env.REACT_APP_API_URL}/journey/journey_add`, requestOptions)
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(errorText => {
+                        throw new Error(`${response.status} ${response.statusText}: ${errorText}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Reset all fields
+                setJourneyName("");
+                setStartDate(new Date());
+                setEndDate(new Date());
+                setJourneyPeopleNumber(1);
+                setJourneyMeals([]);
+                setSubmitError(null);
+                setSubmitSuccess('Le séjour a été ajouté avec succès.');
+                setTimeout(() => {
+                    setSubmitSuccess(null); // Reset success message after 10 seconds
+                }, 10000);
+            })
+            .catch(err => {
+                if (err.message.includes('E11000 duplicate key error collection')) {
+                    setSubmitError('Un séjour avec ce nom existe déjà.');
+                    setTimeout(() => {
+                        setSubmitError(null); // Réinitialiser l'erreur après 10 secondes
+                    }, 10000);
+                } else if (err.message.includes('is required')) {
+                    setSubmitError('Veuillez remplir tous les champs obligatoires.');
+                    setTimeout(() => {
+                        setSubmitError(null); // Réinitialiser l'erreur après 10 secondes
+                    }, 10000);
+                } else {
+                    setSubmitError('Une erreur s\'est produite lors de la soumission du formulaire.');
+                    setTimeout(() => {
+                        setSubmitError(null); // Réinitialiser l'erreur après 10 secondes
+                    }, 10000);
+                }
+            });
     };
 
     const handleStartDateChange = (date) => {
@@ -66,6 +151,15 @@ const JourneyForm = () => {
         computeJourneyMeals(startDate, date);
     };
 
+    const formatToDateString = (date) => {
+        let newDate = new Date(date);
+        let year = newDate.getFullYear();
+        let month = (1 + newDate.getMonth()).toString().padStart(2, '0');
+        let day = newDate.getDate().toString().padStart(2, '0');
+
+        return month + '/' + day + '/' + year;
+    }
+
     const computeJourneyMeals = (start, end) => {
         setJourneyMeals([])
 
@@ -74,6 +168,7 @@ const JourneyForm = () => {
         let endDay = new Date(end);
         console.log("Start : " + startDay);
         console.log("End : " + endDay);
+
 
         // Vérifier que la date de début est antérieure à la date de fin
         if (startDay > endDay) {
@@ -85,7 +180,7 @@ const JourneyForm = () => {
         let newJourneyMeals = [];
         for (let day = startDay; day <= endDay; day.setDate(day.getDate() + 1)) {
             console.log(day);
-            const dateString = [day.getDate(), day.getMonth() + 1, day.getFullYear()].join('/');
+            const dateString = formatToDateString(day);
             meals.forEach(meal => {
                 newJourneyMeals.push({
                     'date': dateString,
@@ -100,26 +195,38 @@ const JourneyForm = () => {
     }
 
     return (<div>
+            {submitError && <p style={{color: 'red'}}>{submitError}</p>}
+            {submitSuccess && <p style={{color: 'green'}}>{submitSuccess}</p>}
             <ValidatorForm onSubmit={handleSubmit} onError={() => null}>
                 <Grid container spacing={6}>
                     <Grid item lg={6} md={6} sm={12} xs={12} sx={{mt: 2}}>
                         <TextField
-                            type="text"
-                            name="journeyname"
-                            id="standard-basic"
+                            name="journeyName"
+                            validators={['required']}
+                            errorMessages={['Ce champ est requis.']}
+                            label="Nom du séjour"
                             value={journeyName}
                             onChange={(event) => setJourneyName(event.target.value)}
-                            errorMessages={["this field is required"]}
-                            label="Nom du séjour (Min length 4, Max length 30)"
-                            validators={["required", "minStringLength: 4",
-                                "maxStringLength: 30"]}
+                        />
+                        <TextValidator
+                            style={{width: '100%'}}
+                            type="number"
+                            name="People Number during the journey"
+                            id="people-number"
+                            onChange={(event) => setJourneyPeopleNumber(event.target.value)}
+                            value={JourneyPeopleNumber}
+                            errorMessages={['Ce champ est requis', 'Doit être un entier supérieur à 1', 'Doit être un entier inférieur à 100']}
+                            label="Nombre de personnes pendant le séjour"
+                            validators={["required", "minNumber:1", "maxNumber:100"]}
                         />
                         <Box display="flex" marginTop={2}>
                             <Box marginRight={2}>
-                                <Box marginRight={2} justifyContent="center" alignItems="center">
+                                <Box marginRight={2} justifyContent="center"
+                                     alignItems="center">
                                     <div>Du</div>
                                 </Box>
-                                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                <LocalizationProvider
+                                    dateAdapter={AdapterDateFns}>
                                     <DatePicker
                                         value={startDate}
                                         onChange={handleStartDateChange}
@@ -132,10 +239,12 @@ const JourneyForm = () => {
                                 </LocalizationProvider>
                             </Box>
                             <Box>
-                                <Box marginRight={2} justifyContent="center" alignItems="center">
+                                <Box marginRight={2} justifyContent="center"
+                                     alignItems="center">
                                     <div>Au</div>
                                 </Box>
-                                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                <LocalizationProvider
+                                    dateAdapter={AdapterDateFns}>
                                     <DatePicker
                                         value={endDate}
                                         onChange={handleEndDateChange}
@@ -149,7 +258,7 @@ const JourneyForm = () => {
                             </Box>
                         </Box>
                         <Box marginTop={5}>
-                            <RecipesTable
+                            <MealsTable
                                 journeyMeals={journeyMeals}
                                 setJourneyMeals={setJourneyMeals}
                                 setOpenRecipyForm={setOpenRecipeForm}
@@ -177,6 +286,7 @@ const JourneyForm = () => {
                           setJourneyMeals={setJourneyMeals}
                           activeIndex={activeIndex}
                           recipesOptions={recipesOptions}
+                          user={currentUser}
             />
         </div>
     )
