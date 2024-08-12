@@ -2,11 +2,13 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/server.js",
   "engines": {
     "node": "21.6.1"
   },
   "scripts": {
+    "start": "node src/server.js",
+    "deploy": "npm start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

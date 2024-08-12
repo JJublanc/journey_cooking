@@ -1,5 +1,7 @@
 backend/.env
 backend/Procfile
+backend/.dev.vars
+backend/deploiments
 backend/node_modules/
 frontend/public
 frontend/node_modules/

@@ -1,15 +1,14 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
-const userRoutes = require('./routes/user');
-const recipyRoutes = require('./routes/recipe');
-const journeyRoutes = require('./routes/journey');
+const userRoutes = require('../routes/user');
+const recipyRoutes = require('../routes/recipe');
+const journeyRoutes = require('../routes/journey');
 require('dotenv').config();
 app.use(express.json());
 const url = require('url');
-const fixieUrl = url.parse(process.env.FIXIE_SOCKS_HOST);
-const fixieAuth = fixieUrl.auth.split(':');
-const useProxy = process.env.USE_PROXY !== 'False';
+
+//TODO : remove proxy usage
 const options = {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -38,18 +37,8 @@ app.use(cors({
 
 app.use(mongoSanitize());
 
-if (useProxy) {
-    console.log('Utilisation d\'un proxy pour se connecter à MongoDB.');
-    options.proxyHost = fixieUrl.hostname;
-    options.proxyPort = fixieUrl.port;
-    options.proxyUsername = 'fixie';
-    options.proxyPassword = fixieAuth[0];
-
-    console.log('Utilisation d\'un proxy pour se connecter à MongoDB.');
-}
-
 // Tentative de connexion
-mongoose.connect(process.env.MONGODB_URI, options)
+mongoose.connect("process.env.MONGODB_URI", options)
     .then(() => console.log('Connexion à MongoDB réussie !'))
     .catch((reason) => console.log('Connexion à MongoDB échouée !', reason));
 
